@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Out The Window</title>
+    <script src="print.bundle.js"></script>
+  </head>
+  <body>
+    <div class="btnBox">
+      <input type="text" name="search" id="search" placeholder="City..." />
+      <div class="radioBtn">
+        <div class="fBox">
+          <label for="f" class="fLabel">F&deg;</label>
+          <input type="radio" id="f" name="units" value="f" checked />
+        </div>
+        <div class="cBox">
+          <label for="c" class="cLabel">C&deg;</label>
+          <input type="radio" id="c" name="units" value="c" />
+        </div>
+      </div>
+      <button id="searchBtn">Search</button>
+    </div>
+    <div id="weatherBox">
+      <div class="container" id="todaysInfo">
+        <div class="innerContainer" id="currentWeatherBox">
+          <h2 id="currentWeatherTitle">Now</h2>
+          <p class="append" id="currentWeatherType">Weather Type</p>
+          <img
+            src="../src/weather-icons/unknow.png"
+            alt="weather icon"
+            class="icon append"
+            id="currentWeatherIcon"
+          />
+          <div id="currentTempBox">
+            <p><strong>Current Temp: </strong></p>
+            <p class="append" id="currentWeatherTemp"></p>
+          </div>
+          <div id="feelsLikeBox">
+            <p><strong>Feels Like: </strong></p>
+            <p class="append" id="currentWeatherFeel"></p>
+          </div>
+        </div>
+        <div class="innerContainer" id="high-low">
+          <h2 id="todayTitle">Today's Weather</h2>
+          <div id="tempBox">
+            <div id="highBox">
+              <p><strong>High:</strong></p>
+              <p class="append" id="currentWeatherHigh"></p>
+            </div>
+            <div id="lowBox">
+              <p><strong>Low:</strong></p>
+              <p class="append" id="currentWeatherLow"></p>
+            </div>
+          </div>
+        </div>
+        <div class="container" id="hourly">
+          <div class="remove" id="hours">
+            <p class="weatherType">Sunny</p>
+            <p class="weatherTemp">55&deg;</p>
+            <img
+              src="../src/weather-icons/day/1000.png"
+              alt="weather icon"
+              class="icon"
+            />
+            <h4 id="hour0">7 AM</h4>
+          </div>
+          <div class="remove" id="hours">
+            <p class="weatherType">Sunny</p>
+            <p class="weatherTemp">55&deg;</p>
+            <img
+              src="../src/weather-icons/day/1000.png"
+              alt="weather icon"
+              class="icon"
+            />
+            <h4 id="hour1">8 AM</h4>
+          </div>
+          <div class="remove" id="hours">
+            <p class="weatherType">Sunny</p>
+            <p class="weatherTemp">55&deg;</p>
+            <img
+              src="../src/weather-icons/day/1000.png"
+              alt="weather icon"
+              class="icon"
+            />
+            <h4 id="hour2">9 AM</h4>
+          </div>
+          <div class="remove" id="hours">
+            <p class="weatherType">Sunny</p>
+            <p class="weatherTemp">55&deg;</p>
+            <img
+              src="../src/weather-icons/day/1000.png"
+              alt="weather icon"
+              class="icon"
+            />
+            <h4 id="hour3">10 AM</h4>
+          </div>
+          <div class="remove" id="hours">
+            <p class="weatherType">Sunny</p>
+            <p class="weatherTemp">55&deg;</p>
+            <img
+              src="../src/weather-icons/day/1000.png"
+              alt="weather icon"
+              class="icon"
+            />
+            <h4 id="hour4">11 AM</h4>
+          </div>
+          <div class="remove" id="hours">
+            <p class="weatherType">Sunny</p>
+            <p class="weatherTemp">55&deg;</p>
+            <img
+              src="../src/weather-icons/day/1000.png"
+              alt="weather icon"
+              class="icon"
+            />
+            <h4 id="hour5">12 PM</h4>
+          </div>
+          <div class="remove" id="hours">
+            <p class="weatherType">Sunny</p>
+            <p class="weatherTemp">55&deg;</p>
+            <img
+              src="../src/weather-icons/day/1000.png"
+              alt="weather icon"
+              class="icon"
+            />
+            <h4 id="hour5">1 PM</h4>
+          </div>
+          <div class="remove" id="hours">
+            <p class="weatherType">Sunny</p>
+            <p class="weatherTemp">55&deg;</p>
+            <img
+              src="../src/weather-icons/day/1000.png"
+              alt="weather icon"
+              class="icon"
+            />
+            <h4 id="hour6">2 PM</h4>
+          </div>
+          <div class="remove" id="hours">
+            <p class="weatherType">Sunny</p>
+            <p class="weatherTemp">55&deg;</p>
+            <img
+              src="../src/weather-icons/day/1000.png"
+              alt="weather icon"
+              class="icon"
+            />
+            <h4 id="hour7">3 PM</h4>
+          </div>
+          <div class="remove" id="hours">
+            <p class="weatherType">Sunny</p>
+            <p class="weatherTemp">55&deg;</p>
+            <img
+              src="../src/weather-icons/day/1000.png"
+              alt="weather icon"
+              class="icon"
+            />
+            <h4 id="hour8">4 PM</h4>
+          </div>
+          <div class="remove" id="hours">
+            <p class="weatherType">Sunny</p>
+            <p class="weatherTemp">55&deg;</p>
+            <img
+              src="../src/weather-icons/day/1000.png"
+              alt="weather icon"
+              class="icon"
+            />
+            <h4 id="hour9">5 PM</h4>
+          </div>
+          <div class="remove" id="hours">
+            <p class="weatherType">Sunny</p>
+            <p class="weatherTemp">55&deg;</p>
+            <img
+              src="../src/weather-icons/day/1000.png"
+              alt="weather icon"
+              class="icon"
+            />
+            <h4 id="hour10">6 PM</h4>
+          </div>
+          <div class="remove" id="hours">
+            <p class="weatherType">Sunny</p>
+            <p class="weatherTemp">55&deg;</p>
+            <img
+              src="../src/weather-icons/day/1000.png"
+              alt="weather icon"
+              class="icon"
+            />
+            <h4 id="hour11">7 PM</h4>
+          </div>
+        </div>
+      </div>
+      <div class="container" id="locationInfo">
+        <div class="cityInfo">
+          <h2 class="append" id="city">Seattle</h2>
+          <h3 class="append" id="country">United States</h3>
+        </div>
+        <img src="../src/weather-icons/default.jpg" id="locationPhoto" />
+        <h4 class="append" id="locatTime">7:00 AM</h4>
+      </div>
+      <div class="container" id="forecastInfo">
+        <div class="innerContainer forecast">
+          <p class="append" id="tomorrowHighLow">60&deg;/ 50&deg;</p>
+          <div class="middleDiv">
+            <div class="type-rain">
+              <p class="append" id="tomorowType">Rainy</p>
+              <p class="append" id="tomorrow">Rain: 80%</p>
+            </div>
+            <img
+              src="../src/weather-icons/day/1072.png"
+              alt="weather icon"
+              class="icon"
+              id="tomorrowIcon"
+            />
+          </div>
+          <h4 id="tomorrow">Tomorrow 9/30</h4>
+        </div>
+        <div class="innerContainer forecast">
+          <p class="append" id="nextDayHighLow">32&deg;/ 25&deg;</p>
+          <div class="middleDiv">
+            <div class="type-rain">
+              <p class="append" id="nextDayType">Snowing</p>
+              <p class="append" id="nextDayRain">Rain: 0%</p>
+            </div>
+            <img
+              src="../src/weather-icons/day/1213.png"
+              alt="weather icon"
+              class="icon"
+              id="nextDayIcon"
+            />
+          </div>
+          <h4 id="nextDay">Overmorrow 10/01</h4>
+        </div>
+      </div>
+      <div class="container" id="airQualityInfo">
+        <div class="innerContainer airQuality">
+          <h4 id="airQuality">Air Quality</h4>
+          <div class="indexBox">
+            <p class="append" id="epaIndex">1</p>
+          </div>
+          <p class="append" id="indexValue">Good</p>
+          <p class="append" id="indexDescription">
+            Air quality is satisfactory, and air pollution poses little or no
+            risk.
+          </p>
+        </div>
+      </div>
+      <div class="container" id="historicalInfo">
+        <h2>Historical Data</h2>
+        <div class="historical">
+          <div class="days">
+            <p class="highLowHistory">32&deg;/ 25&deg;</p>
+            <p id="Type0">Sunny</p>
+            <img
+              src="../src/weather-icons/day/1000.png"
+              alt="weather icon"
+              class="icon"
+            />
+            <h4 id="history0">9/28</h4>
+          </div>
+          <div class="days">
+            <p class="highLowHistory">32&deg;/ 25&deg;</p>
+            <p id="Type1">Sunny</p>
+            <img
+              src="../src/weather-icons/day/1000.png"
+              alt="weather icon"
+              class="icon"
+            />
+            <h4 id="history1">9/27</h4>
+          </div>
+          <div class="days">
+            <p class="highLowHistory">32&deg;/ 25&deg;</p>
+            <p id="Type2">Sunny</p>
+            <img
+              src="../src/weather-icons/day/1000.png"
+              alt="weather icon"
+              class="icon"
+            />
+            <h4 id="history2">9/26</h4>
+          </div>
+          <div class="days">
+            <p class="highLowHistory">32&deg;/ 25&deg;</p>
+            <p id="Type3">Sunny</p>
+            <img
+              src="../src/weather-icons/day/1000.png"
+              alt="weather icon"
+              class="icon"
+            />
+            <h4 id="history3">9/25</h4>
+          </div>
+          <div class="days">
+            <p class="highLowHistory">32&deg;/ 25&deg;</p>
+            <p id="Type4">Sunny</p>
+            <img
+              src="../src/weather-icons/day/1000.png"
+              alt="weather icon"
+              class="icon"
+            />
+            <h4 id="history4">9/24</h4>
+          </div>
+          <div class="days">
+            <p class="highLowHistory">32&deg;/ 25&deg;</p>
+            <p id="Type5">Sunny</p>
+            <img
+              src="../src/weather-icons/day/1000.png"
+              alt="weather icon"
+              class="icon"
+            />
+            <h4 id="history5">9/23</h4>
+          </div>
+          <div class="days">
+            <p class="highLowHistory">32&deg;/ 25&deg;</p>
+            <p id="Type6">Sunny</p>
+            <img
+              src="../src/weather-icons/day/1000.png"
+              alt="weather icon"
+              class="icon"
+            />
+            <h4 id="history6">9/22</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="index.bundle.js"></script>
+</html>
