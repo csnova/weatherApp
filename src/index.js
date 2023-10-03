@@ -29,7 +29,7 @@ function getDay() {
   return dates;
 }
 
-// Used to get the city location of the current user
+// Used to get the city location of the current user from coordinates
 function getCity(coordinates) {
   const xhr = new XMLHttpRequest();
   const lat = coordinates[0];
@@ -77,11 +77,13 @@ function getCoordinates() {
   navigator.geolocation.getCurrentPosition(success, error, options);
 }
 
+// Used to get a random photo of the location
 function getPhoto(location) {
   const photoSrc = `https://source.unsplash.com/random/350x400/?${location}`;
   return photoSrc;
 }
 
+// Used to get the weather history of the last 7 days
 async function getHistoricalWeather(searchTerm) {
   const dates = getDay();
   const location = searchTerm.toLowerCase();
@@ -103,6 +105,7 @@ async function getHistoricalWeather(searchTerm) {
   }
 }
 
+// Used to get the current weather and the forecast for a specific city
 async function getForecastWeather(searchTerm) {
   const location = searchTerm.toLowerCase();
   try {
@@ -117,6 +120,7 @@ async function getForecastWeather(searchTerm) {
   }
 }
 
+// Prints the weather on the actual webpage
 async function printWeather(searchValue, units) {
   const forecastData = await getForecastWeather(searchValue);
   const historicalData = await getHistoricalWeather(searchValue);
@@ -126,12 +130,16 @@ async function printWeather(searchValue, units) {
     .daily_will_it_snow;
   const willSnowNextDay = await forecastData.forecast.forecastday[2].day
     .daily_will_it_snow;
+
+  // Gets the date in month and days for the next 2 days
   const tomorrowDate = await forecastData.forecast.forecastday[1].date;
   const tomorrowMonth = tomorrowDate.slice(5, 7);
   const tomorrowDay = tomorrowDate.slice(8, 10);
   const nextDayDate = await forecastData.forecast.forecastday[2].date;
   const nextDayMonth = nextDayDate.slice(5, 7);
   const nextDayDay = nextDayDate.slice(8, 10);
+
+  // Gets the local time and the hour
   const localDateTime = await forecastData.location.localtime;
   const localTime = localDateTime.slice(11, 16);
   const localHour1 = localTime.slice(0, 1);
@@ -140,9 +148,6 @@ async function printWeather(searchValue, units) {
   if (isNaN(localHour)) {
     localHour = Number(localHour1);
   }
-
-  // console.log(forecastData);
-  // console.log(historicalData);
 
   // Make List of Hours Left in Day
   let hours = await forecastData.forecast.forecastday[0].hour;
@@ -157,7 +162,7 @@ async function printWeather(searchValue, units) {
     "currentWeatherIcon"
   ).src = `../src/weather-icons/day/${forecastData.current.condition.code}.png`;
 
-  // Hourly Weather Except Temps
+  // Hourly Weather
   removeElementsByClass("hours");
   hours.forEach((value, index) => {
     const currentDateTime = hours[index].time;
@@ -180,7 +185,12 @@ async function printWeather(searchValue, units) {
     const temp = document.createElement("p");
     temp.setAttribute("id", `weatherTemp${index}`);
     temp.classList.add("weatherTemp");
-    temp.textContent = `${hours[index].temp_f}`;
+    if (units === "f") {
+      temp.textContent = `${hours[index].temp_f}\u00B0`;
+    }
+    if (units === "c") {
+      temp.textContent = `${hours[index].temp_c}\u00B0`;
+    }
     hour.appendChild(temp);
 
     const icon = document.createElement("img");
@@ -308,16 +318,22 @@ async function printWeather(searchValue, units) {
     document.getElementById("indexBox").style.borderColor = "darkMagenta";
   }
 
-  // Last 7 Days Weather Except Temps
+  // Last 7 Days Weather
   for (let i = 1; i <= 7; i++) {
-    document.getElementById(`highLowHistory${i}`).textContent = `${Math.round(
-      historicalData[i].forecast.forecastday[0].day.maxtemp_f
-    )}\u00B0/${Math.round(
-      historicalData[i].forecast.forecastday[0].day.mintemp_f
-    )}\u00B0`;
-    // document.getElementById(
-    //   `Type${i}`
-    // ).textContent = `${historicalData[i].forecast.forecastday[0].day.condition.text}`;
+    if (units === "f") {
+      document.getElementById(`highLowHistory${i}`).textContent = `${Math.round(
+        historicalData[i].forecast.forecastday[0].day.maxtemp_f
+      )}\u00B0/${Math.round(
+        historicalData[i].forecast.forecastday[0].day.mintemp_f
+      )}\u00B0`;
+    }
+    if (units === "c") {
+      document.getElementById(`highLowHistory${i}`).textContent = `${Math.round(
+        historicalData[i].forecast.forecastday[0].day.maxtemp_c
+      )}\u00B0/${Math.round(
+        historicalData[i].forecast.forecastday[0].day.mintemp_c
+      )}\u00B0`;
+    }
     document.getElementById(
       `historicalIcon${i}`
     ).src = `../src/weather-icons/day/${historicalData[i].forecast.forecastday[0].day.condition.code}.png`;
@@ -328,18 +344,6 @@ async function printWeather(searchValue, units) {
       `history${i}`
     ).textContent = `${historicalMonth}/${historicalDay}`;
   }
-
-  //   <div class="days">
-  //   <p class="highLowHistory" id="highLowHistory0">32&deg;/ 25&deg;</p>
-  //   <p id="Type0">Sunny</p>
-  //   <img
-  //     src="../src/weather-icons/day/1000.png"
-  //     alt="weather icon"
-  //     class="icon"
-  //     id="historicalIcon0"
-  //   />
-  //   <h4 id="history0">9/28</h4>
-  // </div>
 
   // Temp for Each Section
   if (units === "f") {
