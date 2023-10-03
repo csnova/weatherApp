@@ -66,7 +66,6 @@ function getCoordinates() {
     const lat = crd.latitude.toString();
     const lng = crd.longitude.toString();
     const coordinates = [lat, lng];
-    console.log(`Latitude: ${lat}, Longitude: ${lng}`);
     getCity(coordinates);
   }
 
@@ -152,7 +151,6 @@ async function printWeather(searchValue, units) {
   // Make List of Hours Left in Day
   let hours = await forecastData.forecast.forecastday[0].hour;
   hours = hours.slice(localHour, 25);
-  console.log(hours);
 
   // Current Weather except Temp
   document.getElementById(
