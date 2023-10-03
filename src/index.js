@@ -5,6 +5,14 @@ import { format, addDays } from "date-fns";
 const btn = document.getElementById("searchBtn");
 const searchInput = document.getElementById("search");
 
+// Used to remove the hourly boxed before they are remade
+function removeElementsByClass(className) {
+  const elements = document.getElementsByClassName(className);
+  while (elements.length > 0) {
+    elements[0].parentNode.removeChild(elements[0]);
+  }
+}
+
 // Used to get the date of the last 7 days for Historical Weather
 function getDay() {
   let currentDay = new Date();
@@ -45,6 +53,7 @@ function getCity(coordinates) {
   xhr.addEventListener("readystatechange", processRequest, false);
 }
 
+// Used to get the coordinates of the current user
 function getCoordinates() {
   const options = {
     enableHighAccuracy: true,
@@ -63,16 +72,13 @@ function getCoordinates() {
 
   function error(err) {
     console.warn(`ERROR(${err.code}): ${err.message}`);
-    printWeather("seattle", "f");
   }
 
   navigator.geolocation.getCurrentPosition(success, error, options);
 }
 
-getCoordinates();
-
 function getPhoto(location) {
-  const photoSrc = `https://source.unsplash.com/random/350x450/?${location}`;
+  const photoSrc = `https://source.unsplash.com/random/350x400/?${location}`;
   return photoSrc;
 }
 
@@ -115,82 +121,290 @@ async function printWeather(searchValue, units) {
   const forecastData = await getForecastWeather(searchValue);
   const historicalData = await getHistoricalWeather(searchValue);
   const photoSrc = await getPhoto(searchValue);
-  console.log(forecastData);
-  console.log(historicalData);
+  const indexValue = await forecastData.current.air_quality["us-epa-index"];
+  const willSnowTomorrow = await forecastData.forecast.forecastday[1].day
+    .daily_will_it_snow;
+  const willSnowNextDay = await forecastData.forecast.forecastday[2].day
+    .daily_will_it_snow;
+  const tomorrowDate = await forecastData.forecast.forecastday[1].date;
+  const tomorrowMonth = tomorrowDate.slice(5, 7);
+  const tomorrowDay = tomorrowDate.slice(8, 10);
+  const nextDayDate = await forecastData.forecast.forecastday[2].date;
+  const nextDayMonth = nextDayDate.slice(5, 7);
+  const nextDayDay = nextDayDate.slice(8, 10);
+  const localDateTime = await forecastData.location.localtime;
+  const localTime = localDateTime.slice(11, 16);
+  const localHour1 = localTime.slice(0, 1);
+  const localHour2 = localTime.slice(0, 2);
+  let localHour = Number(localHour2);
+  if (isNaN(localHour)) {
+    localHour = Number(localHour1);
+  }
 
-  document.getElementById("locationPhoto").src = photoSrc;
+  // console.log(forecastData);
+  // console.log(historicalData);
+
+  // Make List of Hours Left in Day
+  let hours = await forecastData.forecast.forecastday[0].hour;
+  hours = hours.slice(localHour, 25);
+  console.log(hours);
+
+  // Current Weather except Temp
   document.getElementById(
     "currentWeatherType"
   ).textContent = `${forecastData.current.condition.text}`;
   document.getElementById(
     "currentWeatherIcon"
   ).src = `../src/weather-icons/day/${forecastData.current.condition.code}.png`;
+
+  // Hourly Weather Except Temps
+  removeElementsByClass("hours");
+  hours.forEach((value, index) => {
+    const currentDateTime = hours[index].time;
+    const currentTime = currentDateTime.slice(11, 16);
+    let currentHour = currentTime.slice(0, 2);
+    currentHour = Number(currentHour);
+
+    const hourly = document.getElementById("hourly");
+    const hour = document.createElement("div");
+    hour.setAttribute("id", `hours${index}`);
+    hour.classList.add("hours");
+    hourly.appendChild(hour);
+
+    const type = document.createElement("p");
+    type.setAttribute("id", `weatherType${index}`);
+    type.classList.add("weatherType");
+    type.textContent = `${hours[index].condition.text}`;
+    hour.appendChild(type);
+
+    const temp = document.createElement("p");
+    temp.setAttribute("id", `weatherTemp${index}`);
+    temp.classList.add("weatherTemp");
+    temp.textContent = `${hours[index].temp_f}`;
+    hour.appendChild(temp);
+
+    const icon = document.createElement("img");
+    icon.setAttribute("id", `iconHourly${index}`);
+    icon.setAttribute("alt", "weather icon");
+    icon.classList.add("icon");
+    icon.src = `../src/weather-icons/day/${hours[index].condition.code}.png`;
+    hour.appendChild(icon);
+
+    const title = document.createElement("h4");
+    title.setAttribute("id", `hour${index}`);
+    if (currentHour === 0) {
+      title.textContent = "12 AM";
+    } else if (currentHour <= 12) {
+      title.textContent = ` ${currentHour} AM`;
+    } else {
+      const pmTime = currentHour - 12;
+      title.textContent = ` ${pmTime} PM`;
+    }
+    hour.appendChild(title);
+  });
+
+  // Local Information
+  document.getElementById(
+    "city"
+  ).textContent = ` ${forecastData.location.name}`;
+  document.getElementById(
+    "country"
+  ).textContent = ` ${forecastData.location.country}`;
+  document.getElementById("locationPhoto").src = photoSrc;
+  if (localHour === 0) {
+    const nightTime = localTime.replace(localHour, 12);
+    document.getElementById("localTime").textContent = ` ${nightTime} AM`;
+  } else if (localHour < 12) {
+    document.getElementById("localTime").textContent = ` ${localTime} AM`;
+  } else {
+    let pmTime = localHour - 12;
+    pmTime = localTime.replace(localHour, pmTime);
+    document.getElementById("localTime").textContent = ` ${pmTime} PM`;
+  }
+
+  // Tomorrows Forecast Except Temp
+  document.getElementById(
+    "tomorrowType"
+  ).textContent = `${forecastData.forecast.forecastday[1].day.condition.text}`;
+  document.getElementById(
+    "tomorrowIcon"
+  ).src = `../src/weather-icons/day/${forecastData.forecast.forecastday[1].day.condition.code}.png`;
+  if (willSnowTomorrow === 1) {
+    document.getElementById("tomorrowRainSnow").textContent = "Snow Chance:";
+    document.getElementById(
+      "tomorrowRain"
+    ).textContent = `${forecastData.forecast.forecastday[1].day.daily_chance_of_snow}%`;
+  } else {
+    document.getElementById("tomorrowRainSnow").textContent = "Rain Chance:";
+    document.getElementById(
+      "tomorrowRain"
+    ).textContent = `${forecastData.forecast.forecastday[1].day.daily_chance_of_rain}%`;
+  }
+  document.getElementById(
+    "tomorrow"
+  ).textContent = `Tomorrow ${tomorrowMonth}/${tomorrowDay}`;
+
+  // Day After Tomorrow Forecast Except Temp
+  document.getElementById(
+    "nextDayType"
+  ).textContent = `${forecastData.forecast.forecastday[2].day.condition.text}`;
+  document.getElementById(
+    "nextDayIcon"
+  ).src = `../src/weather-icons/day/${forecastData.forecast.forecastday[2].day.condition.code}.png`;
+  if (willSnowNextDay === 1) {
+    document.getElementById("nextDayRainSnow").textContent = "Snow Chance:";
+    document.getElementById(
+      "nextDayRain"
+    ).textContent = `${forecastData.forecast.forecastday[2].day.daily_chance_of_snow}%`;
+  } else {
+    document.getElementById("nextDayRainSnow").textContent = "Rain Chance:";
+    document.getElementById(
+      "nextDayRain"
+    ).textContent = `${forecastData.forecast.forecastday[2].day.daily_chance_of_rain}%`;
+  }
+  document.getElementById(
+    "nextDay"
+  ).textContent = `Overmorrow ${nextDayMonth}/${nextDayDay}`;
+
+  // Air Quality Information
+  document.getElementById("epaIndex").textContent = `${indexValue}`;
+  if (indexValue <= 50) {
+    document.getElementById("indexValue").textContent = "Good";
+    document.getElementById("indexDescription").textContent =
+      "Air Quality is Satisfactory, little or no risk";
+    document.getElementById("indexBox").style.background = "lightGreen";
+    document.getElementById("indexBox").style.borderColor = "darkGreen";
+  } else if (indexValue <= 100) {
+    document.getElementById("indexValue").textContent = "Moderate";
+    document.getElementById("indexDescription").textContent =
+      "Air Quality is Acceptable, maybe risk fro some people";
+    document.getElementById("indexBox").style.background = "lightYellow";
+    document.getElementById("indexBox").style.borderColor = "gold";
+  } else if (indexValue <= 150) {
+    document.getElementById("indexValue").textContent =
+      "Unhealthy for Sensitive Groups";
+    document.getElementById("indexValue").style.fontSize = "18px";
+    document.getElementById("indexDescription").textContent =
+      "Sensitive Groups may experience health effects";
+    document.getElementById("indexBox").style.background = "orange";
+    document.getElementById("indexBox").style.borderColor = "darkOrange";
+  } else if (indexValue <= 200) {
+    document.getElementById("indexValue").textContent = "Unhealthy";
+    document.getElementById("indexDescription").textContent =
+      "General Public may experience health effects";
+    document.getElementById("indexBox").style.background = "red";
+    document.getElementById("indexBox").style.borderColor = "crimson";
+  } else if (indexValue <= 300) {
+    document.getElementById("indexValue").textContent = "Very Unhealthy";
+    document.getElementById("indexDescription").textContent =
+      "Health Alert: The health risk is increased for everyone.";
+    document.getElementById("indexBox").style.background = "mediumPurple";
+    document.getElementById("indexBox").style.borderColor = "darkViolet";
+  } else {
+    document.getElementById("indexValue").textContent = "Hazardous";
+    document.getElementById("indexDescription").textContent =
+      "Health Warning of emergency conditions, everyone is more likely to be effected";
+    document.getElementById("indexBox").style.background = "purple";
+    document.getElementById("indexBox").style.borderColor = "darkMagenta";
+  }
+
+  // Last 7 Days Weather Except Temps
+  for (let i = 1; i <= 7; i++) {
+    document.getElementById(`highLowHistory${i}`).textContent = `${Math.round(
+      historicalData[i].forecast.forecastday[0].day.maxtemp_f
+    )}\u00B0/${Math.round(
+      historicalData[i].forecast.forecastday[0].day.mintemp_f
+    )}\u00B0`;
+    // document.getElementById(
+    //   `Type${i}`
+    // ).textContent = `${historicalData[i].forecast.forecastday[0].day.condition.text}`;
+    document.getElementById(
+      `historicalIcon${i}`
+    ).src = `../src/weather-icons/day/${historicalData[i].forecast.forecastday[0].day.condition.code}.png`;
+    const historicalDate = historicalData[i].forecast.forecastday[0].date;
+    const historicalMonth = historicalDate.slice(5, 7);
+    const historicalDay = historicalDate.slice(8, 10);
+    document.getElementById(
+      `history${i}`
+    ).textContent = `${historicalMonth}/${historicalDay}`;
+  }
+
+  //   <div class="days">
+  //   <p class="highLowHistory" id="highLowHistory0">32&deg;/ 25&deg;</p>
+  //   <p id="Type0">Sunny</p>
+  //   <img
+  //     src="../src/weather-icons/day/1000.png"
+  //     alt="weather icon"
+  //     class="icon"
+  //     id="historicalIcon0"
+  //   />
+  //   <h4 id="history0">9/28</h4>
+  // </div>
+
+  // Temp for Each Section
   if (units === "f") {
     document.getElementById(
       "currentWeatherTemp"
-    ).textContent = ` ${forecastData.current.temp_f} \u00B0`;
+    ).textContent = ` ${forecastData.current.temp_f}\u00B0`;
     document.getElementById(
       "currentWeatherFeel"
-    ).textContent = ` ${forecastData.current.feelslike_f} \u00B0`;
-    // document.getElementById(
-    //   "currentWeatherHigh"
-    // ).textContent = ` ${forecastData.forecast.forecastday.0.day.maxtemp_f}\u00B0`;
+    ).textContent = ` ${forecastData.current.feelslike_f}\u00B0`;
+    document.getElementById(
+      "currentWeatherHigh"
+    ).textContent = ` ${forecastData.forecast.forecastday[0].day.maxtemp_f}\u00B0`;
     document.getElementById(
       "currentWeatherLow"
-    ).textContent = ` ${forecastData.forecast.forecastday[0]day.maxtemp_f}\u00B0`;
+    ).textContent = ` ${forecastData.forecast.forecastday[0].day.mintemp_f}\u00B0`;
+    document.getElementById("tomorrowHighLow").textContent = ` ${Math.round(
+      forecastData.forecast.forecastday[1].day.maxtemp_f
+    )}\u00B0 / ${Math.round(
+      forecastData.forecast.forecastday[1].day.mintemp_f
+    )}\u00B0`;
+    document.getElementById("nextDayHighLow").textContent = ` ${Math.round(
+      forecastData.forecast.forecastday[2].day.maxtemp_f
+    )}\u00B0 / ${Math.round(
+      forecastData.forecast.forecastday[2].day.mintemp_f
+    )}\u00B0`;
   }
   if (units === "c") {
     document.getElementById(
       "currentWeatherTemp"
-    ).textContent = ` ${forecastData.current.temp_c} \u00B0`;
+    ).textContent = ` ${forecastData.current.temp_c}\u00B0`;
     document.getElementById(
       "currentWeatherFeel"
-    ).textContent = ` ${forecastData.current.feelslike_c} \u00B0`;
+    ).textContent = ` ${forecastData.current.feelslike_c}\u00B0`;
+    document.getElementById(
+      "currentWeatherHigh"
+    ).textContent = ` ${forecastData.forecast.forecastday[0].day.maxtemp_c}\u00B0`;
+    document.getElementById(
+      "currentWeatherLow"
+    ).textContent = ` ${forecastData.forecast.forecastday[0].day.mintemp_c}\u00B0`;
+    document.getElementById("tomorrowHighLow").textContent = ` ${Math.round(
+      forecastData.forecast.forecastday[1].day.maxtemp_c
+    )}\u00B0 / ${Math.round(
+      forecastData.forecast.forecastday[1].day.mintemp_c
+    )}\u00B0`;
+    document.getElementById("nextDayHighLow").textContent = ` ${Math.round(
+      forecastData.forecast.forecastday[2].day.maxtemp_c
+    )}\u00B0 / ${Math.round(
+      forecastData.forecast.forecastday[2].day.mintemp_c
+    )}\u00B0`;
   }
-
-  // <div class="container" id="todaysInfo">
-  //       <div class="innerContainer" id="currentWeatherBox">
-  //         <h2 id="currentWeatherTitle">Now</h2>
-  //         <p class="append" id="currentWeatherType">Weather Type</p>
-  //         <img
-  //           src="../src/weather-icons/unknow.png"
-  //           alt="weather icon"
-  //           class="icon append"
-  //         />
-  //         <div id="currentTempBox">
-  //           <p><strong>Current Temp:</strong></p>
-  //           <p class="append" id="currentWeatherTemp"></p>
-  //         </div>
-  //         <div id="feelsLikeBox">
-  //           <p><strong>Feels Like:</strong></p>
-  //           <p class="append" id="currentWeatherTemp"></p>
-  //         </div>
-  //       </div>
-
-  // const weatherBox = document.getElementById("weatherBox");
-
-  // const currentIcon = document.createElement("img");
-  // currentIcon.src = `../src/weather-icons/day/${forecastData.current.condition.code}.png`;
-  // currentIcon.classList.add("currentIcon");
-  // weatherBox.appendChild(currentIcon);
-
-  // const currentType = document.createElement("p");
-  // currentType.classList.add("currentType");
-  // currentType.textContent = `${forecastData.current.condition.text}`;
-  // weatherBox.appendChild(currentType);
-
-  // const currentTemp = document.createElement("p");
-  // currentTemp.classList.add("currentTemp");
-  // if (units === "f") {
-  //   currentTemp.textContent = `${forecastData.current.temp_f} \u00B0`;
-  // }
-  // if (units === "c") {
-  //   currentTemp.textContent = `${forecastData.current.temp_c} \u00B0`;
-  // }
-  // weatherBox.appendChild(currentTemp);
 }
+
+printWeather("Seattle", "f");
+window.onload = (event) => {
+  getCoordinates();
+};
 
 btn.addEventListener("click", () => {
   const searchValue = searchInput.value;
-  printWeather(searchValue, "f");
+  let units;
+  if (document.getElementById("f").checked) {
+    units = "f";
+  }
+  if (document.getElementById("c").checked) {
+    units = "c";
+  }
+  printWeather(searchValue, units);
 });
