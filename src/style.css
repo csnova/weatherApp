@@ -16,6 +16,9 @@
 body {
   height: 100%;
   width: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -53,7 +56,10 @@ input {
 .fLabel {
   padding: 0px 10px;
   font-size: 14px;
-  color: var(--font-color);
+  font-weight: 700;
+  color: white;
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: black;
 }
 #c,
 #f {

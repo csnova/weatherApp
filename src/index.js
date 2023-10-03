@@ -148,6 +148,13 @@ async function printWeather(searchValue, units) {
     localHour = Number(localHour1);
   }
 
+  // Change Background Image
+  if (localHour > 19 || localHour < 7) {
+    document.body.style.backgroundImage = `url(../src/weather-icons/backgroundNight/${forecastData.current.condition.code}.jpg)`;
+  } else {
+    document.body.style.backgroundImage = `url(../src/weather-icons/backgroundDay/${forecastData.current.condition.code}.jpg)`;
+  }
+
   // Make List of Hours Left in Day
   let hours = await forecastData.forecast.forecastday[0].hour;
   hours = hours.slice(localHour, 25);
@@ -156,9 +163,15 @@ async function printWeather(searchValue, units) {
   document.getElementById(
     "currentWeatherType"
   ).textContent = `${forecastData.current.condition.text}`;
-  document.getElementById(
-    "currentWeatherIcon"
-  ).src = `../src/weather-icons/day/${forecastData.current.condition.code}.png`;
+  if (localHour > 19 || localHour < 7) {
+    document.getElementById(
+      "currentWeatherIcon"
+    ).src = `../src/weather-icons/night/${forecastData.current.condition.code}.png`;
+  } else {
+    document.getElementById(
+      "currentWeatherIcon"
+    ).src = `../src/weather-icons/day/${forecastData.current.condition.code}.png`;
+  }
 
   // Hourly Weather
   removeElementsByClass("hours");
@@ -195,8 +208,13 @@ async function printWeather(searchValue, units) {
     icon.setAttribute("id", `iconHourly${index}`);
     icon.setAttribute("alt", "weather icon");
     icon.classList.add("icon");
-    icon.src = `../src/weather-icons/day/${hours[index].condition.code}.png`;
-    hour.appendChild(icon);
+    if (currentHour > 19 || currentHour < 7) {
+      icon.src = `../src/weather-icons/night/${hours[index].condition.code}.png`;
+      hour.appendChild(icon);
+    } else {
+      icon.src = `../src/weather-icons/day/${hours[index].condition.code}.png`;
+      hour.appendChild(icon);
+    }
 
     const title = document.createElement("h4");
     title.setAttribute("id", `hour${index}`);
@@ -276,19 +294,19 @@ async function printWeather(searchValue, units) {
 
   // Air Quality Information
   document.getElementById("epaIndex").textContent = `${indexValue}`;
-  if (indexValue <= 50) {
+  if (indexValue === 1) {
     document.getElementById("indexValue").textContent = "Good";
     document.getElementById("indexDescription").textContent =
       "Air Quality is Satisfactory, little or no risk";
     document.getElementById("indexBox").style.background = "lightGreen";
     document.getElementById("indexBox").style.borderColor = "darkGreen";
-  } else if (indexValue <= 100) {
+  } else if (indexValue === 2) {
     document.getElementById("indexValue").textContent = "Moderate";
     document.getElementById("indexDescription").textContent =
       "Air Quality is Acceptable, maybe risk fro some people";
     document.getElementById("indexBox").style.background = "lightYellow";
     document.getElementById("indexBox").style.borderColor = "gold";
-  } else if (indexValue <= 150) {
+  } else if (indexValue === 3) {
     document.getElementById("indexValue").textContent =
       "Unhealthy for Sensitive Groups";
     document.getElementById("indexValue").style.fontSize = "18px";
@@ -296,13 +314,13 @@ async function printWeather(searchValue, units) {
       "Sensitive Groups may experience health effects";
     document.getElementById("indexBox").style.background = "orange";
     document.getElementById("indexBox").style.borderColor = "darkOrange";
-  } else if (indexValue <= 200) {
+  } else if (indexValue === 4) {
     document.getElementById("indexValue").textContent = "Unhealthy";
     document.getElementById("indexDescription").textContent =
       "General Public may experience health effects";
     document.getElementById("indexBox").style.background = "red";
     document.getElementById("indexBox").style.borderColor = "crimson";
-  } else if (indexValue <= 300) {
+  } else if (indexValue === 5) {
     document.getElementById("indexValue").textContent = "Very Unhealthy";
     document.getElementById("indexDescription").textContent =
       "Health Alert: The health risk is increased for everyone.";
