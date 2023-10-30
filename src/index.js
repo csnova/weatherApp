@@ -91,7 +91,7 @@ async function getHistoricalWeather(searchTerm) {
 
     for (const date of dates) {
       const historical = await fetch(
-        `http://api.weatherapi.com/v1/history.json?key=a9cf78d18a474724bd5183446232609&q=${location}&dt=${date}`,
+        `https://api.weatherapi.com/v1/history.json?key=a9cf78d18a474724bd5183446232609&q=${location}&dt=${date}`,
         { mode: "cors" }
       );
       const datesHistoricalData = await historical.json();
@@ -109,7 +109,7 @@ async function getForecastWeather(searchTerm) {
   const location = searchTerm.toLowerCase();
   try {
     const forecast = await fetch(
-      `http://api.weatherapi.com/v1/forecast.json?key=a9cf78d18a474724bd5183446232609&q=${location}&days=3&aqi=yes&alerts=yes`,
+      `https://api.weatherapi.com/v1/forecast.json?key=a9cf78d18a474724bd5183446232609&q=${location}&days=3&aqi=yes&alerts=yes`,
       { mode: "cors" }
     );
     const forecastData = await forecast.json();
@@ -293,19 +293,20 @@ async function printWeather(searchValue, units) {
   ).textContent = `Overmorrow ${nextDayMonth}/${nextDayDay}`;
 
   // Air Quality Information
-  document.getElementById("epaIndex").textContent = `${indexValue}`;
   if (indexValue === 1) {
     document.getElementById("indexValue").textContent = "Good";
     document.getElementById("indexDescription").textContent =
       "Air Quality is Satisfactory, little or no risk";
     document.getElementById("indexBox").style.background = "lightGreen";
     document.getElementById("indexBox").style.borderColor = "darkGreen";
+    document.getElementById("epaIndex").textContent = `${indexValue}`;
   } else if (indexValue === 2) {
     document.getElementById("indexValue").textContent = "Moderate";
     document.getElementById("indexDescription").textContent =
       "Air Quality is Acceptable, maybe risk fro some people";
     document.getElementById("indexBox").style.background = "lightYellow";
     document.getElementById("indexBox").style.borderColor = "gold";
+    document.getElementById("epaIndex").textContent = `${indexValue}`;
   } else if (indexValue === 3) {
     document.getElementById("indexValue").textContent =
       "Unhealthy for Sensitive Groups";
@@ -314,24 +315,35 @@ async function printWeather(searchValue, units) {
       "Sensitive Groups may experience health effects";
     document.getElementById("indexBox").style.background = "orange";
     document.getElementById("indexBox").style.borderColor = "darkOrange";
+    document.getElementById("epaIndex").textContent = `${indexValue}`;
   } else if (indexValue === 4) {
     document.getElementById("indexValue").textContent = "Unhealthy";
     document.getElementById("indexDescription").textContent =
       "General Public may experience health effects";
     document.getElementById("indexBox").style.background = "red";
     document.getElementById("indexBox").style.borderColor = "crimson";
+    document.getElementById("epaIndex").textContent = `${indexValue}`;
   } else if (indexValue === 5) {
     document.getElementById("indexValue").textContent = "Very Unhealthy";
     document.getElementById("indexDescription").textContent =
       "Health Alert: The health risk is increased for everyone.";
     document.getElementById("indexBox").style.background = "mediumPurple";
     document.getElementById("indexBox").style.borderColor = "darkViolet";
-  } else {
+    document.getElementById("epaIndex").textContent = `${indexValue}`;
+  } else if (indexValue > 5) {
     document.getElementById("indexValue").textContent = "Hazardous";
     document.getElementById("indexDescription").textContent =
       "Health Warning of emergency conditions, everyone is more likely to be effected";
     document.getElementById("indexBox").style.background = "purple";
     document.getElementById("indexBox").style.borderColor = "darkMagenta";
+    document.getElementById("epaIndex").textContent = `${indexValue}`;
+  } else {
+    document.getElementById("indexValue").textContent = "Undefined";
+    document.getElementById("indexDescription").textContent =
+      "There is no Air Quality Data Available";
+    document.getElementById("indexBox").style.background = "white";
+    document.getElementById("indexBox").style.borderColor = "black";
+    document.getElementById("epaIndex").textContent = "";
   }
 
   // Last 7 Days Weather
